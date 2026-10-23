@@ -3,185 +3,186 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>لوحة استقبال عيادة الشروق</title>
+  <title>لوحة الريسبشن - عيادة الشروق</title>
   <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <style>
-    :root { --primary: #1b4d89; --primary-dark: #0f3057; --gold: #d4af37; --bg-light: #f4f7fb; --text-dark: #223354; --white: #ffffff; --shadow: 0 10px 30px rgba(27, 77, 137, 0.1); --radius: 16px; }
-    * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Tajawal', sans-serif; direction: rtl; }
-    body { background-color: var(--bg-light); color: var(--text-dark); min-height: 100vh; display: flex; flex-direction: column; text-align: right; }
-    header { background: linear-gradient(135deg, var(--primary-dark), var(--primary)); color: var(--white); padding: 20px 25px; text-align: center; border-bottom-left-radius: 25px; border-bottom-right-radius: 25px; box-shadow: 0 4px 15px rgba(0,0,0,0.15); display: flex; justify-content: space-between; align-items: center; }
-    header h1 { font-size: 1.3rem; font-weight: 800; }
-    header p { color: var(--gold); font-size: 0.85rem; font-weight: 700; }
-    .container { max-width: 1000px; margin: 20px auto; padding: 0 16px; width: 100%; flex: 1; }
-    .card { background: var(--white); border-radius: var(--radius); padding: 20px; box-shadow: var(--shadow); border: 1px solid rgba(27, 77, 137, 0.08); margin-bottom: 20px; }
-    
-    .search-section { display: flex; gap: 10px; margin-bottom: 15px; direction: rtl; }
-    .search-box { flex: 1; display: flex; align-items: center; background: #f1f5f9; border: 1.5px solid #cbd5e1; border-radius: 10px; padding: 8px 14px; gap: 10px; }
-    .search-box input { border: none; background: transparent; outline: none; width: 100%; font-size: 0.95rem; font-weight: 700; color: var(--text-dark); text-align: right; }
-    .btn-search { background: var(--primary); color: white; border: none; padding: 0 20px; border-radius: 10px; font-weight: 800; cursor: pointer; display: flex; align-items: center; gap: 6px; font-size: 0.9rem; }
-    .btn-reset { background: #e2e8f0; color: #475569; border: none; padding: 0 15px; border-radius: 10px; font-weight: 700; cursor: pointer; }
+    :root {
+      --primary: #1b4d89;
+      --primary-dark: #0f3057;
+      --gold: #d4af37;
+      --bg-light: #f4f7fb;
+      --text-dark: #223354;
+      --white: #ffffff;
+      --shadow: 0 10px 30px rgba(27, 77, 137, 0.1);
+      --radius: 16px;
+    }
 
-    .table-container { overflow-x: auto; }
-    table { width: 100%; border-collapse: collapse; margin-top: 10px; text-align: right; font-size: 0.9rem; }
-    th, td { padding: 12px 10px; border-bottom: 1px solid #edf2f7; text-align: right; }
-    th { background: #e6f0fa; color: var(--primary-dark); font-weight: 800; }
-    .status-badge { display: inline-block; padding: 4px 10px; border-radius: 15px; font-weight: 800; font-size: 0.75rem; }
-    .status-pending { background: #fef3c7; color: #d97706; }
-    .status-approved { background: #dcfce7; color: #15803d; }
-    .status-rejected { background: #fee2e2; color: #b91c1c; }
-    .btn-action { padding: 6px 12px; border: none; border-radius: 8px; font-weight: 700; cursor: pointer; font-size: 0.8rem; margin-left: 5px; }
-    .btn-approve { background: #22c55e; color: white; }
-    .btn-reject { background: #ef4444; color: white; }
-    .refresh-btn { background: var(--gold); color: var(--primary-dark); border: none; padding: 8px 16px; border-radius: 8px; font-weight: 800; cursor: pointer; display: flex; align-items: center; gap: 6px; }
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Tajawal', sans-serif; }
+    body { background-color: var(--bg-light); color: var(--text-dark); min-height: 100vh; padding: 20px 10px; }
+    .header { background: linear-gradient(135deg, var(--primary-dark), var(--primary)); color: var(--white); padding: 20px; border-radius: var(--radius); text-align: center; margin-bottom: 20px; box-shadow: var(--shadow); }
+    .header h1 { font-size: 1.5rem; margin-bottom: 5px; }
+    .header p { color: var(--gold); font-weight: 700; font-size: 0.9rem; }
+    .container { max-width: 650px; margin: 0 auto; }
+    
+    .search-box { background: var(--white); padding: 18px; border-radius: var(--radius); box-shadow: var(--shadow); margin-bottom: 20px; border: 1px solid rgba(27, 77, 137, 0.1); }
+    .search-box label { font-weight: 800; color: var(--primary-dark); display: block; margin-bottom: 8px; }
+    .search-row { display: flex; gap: 8px; }
+    .search-input { flex: 1; padding: 12px 15px; border: 2px solid #cbd5e1; border-radius: 10px; font-size: 1rem; outline: none; }
+    .search-input:focus { border-color: var(--primary); }
+    .btn-search { background: var(--primary); color: white; border: none; padding: 0 20px; border-radius: 10px; font-weight: 800; cursor: pointer; display: flex; align-items: center; gap: 8px; }
+
+    .card { background: var(--white); border-radius: var(--radius); padding: 18px; box-shadow: var(--shadow); margin-bottom: 15px; border-right: 5px solid var(--primary); }
+    .card-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #edf2f7; padding-bottom: 10px; margin-bottom: 10px; }
+    .patient-name { font-size: 1.2rem; font-weight: 800; color: var(--primary-dark); }
+    .card-body { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; font-size: 0.9rem; font-weight: 600; }
+    .info-item { display: flex; align-items: center; gap: 8px; color: #475569; }
+    .info-item i { color: var(--gold); }
+    .actions { margin-top: 15px; padding-top: 10px; border-top: 1px dashed #e2e8f0; display: flex; gap: 10px; flex-wrap: wrap; }
+    .btn { border: none; padding: 8px 16px; border-radius: 8px; font-weight: 800; cursor: pointer; display: flex; align-items: center; gap: 6px; }
+    .btn-approve { background: #dcfce7; color: #15803d; }
+    .btn-reject { background: #fee2e2; color: #b91c1c; }
+    .btn-delete { background: #f1f5f9; color: #64748b; margin-right: auto; }
+    .note-input { width: 100%; padding: 8px 12px; border: 1.5px solid #cbd5e1; border-radius: 8px; margin-top: 8px; font-size: 0.85rem; outline: none; }
+    .badge { padding: 5px 12px; border-radius: 12px; font-size: 0.8rem; font-weight: 800; }
+    .badge-pending { background: #fef3c7; color: #d97706; }
+    .badge-approved { background: #dcfce7; color: #15803d; }
+    .badge-rejected { background: #fee2e2; color: #b91c1c; }
+    .empty-msg { text-align: center; padding: 30px; background: var(--white); border-radius: var(--radius); color: #64748b; font-weight: 700; }
   </style>
 </head>
 <body>
 
-  <header>
-    <div>
-      <h1>لوحة تحكم الاستقبال</h1>
-      <p>عيادة الشروق للرعاية الطبية</p>
-    </div>
-    <button class="refresh-btn" onclick="loadBookings()"><i class="fa-solid fa-rotate"></i> تحديث القائمة</button>
-  </header>
-
   <div class="container">
-    <div class="card">
-      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
-        <h3 style="color: var(--primary); font-weight: 800;"><i class="fa-solid fa-list-check"></i> قائمة الحجوزات الواردة</h3>
-        <span id="loading-text" style="font-size: 0.85rem; color: #64748b;">جاري التحميل...</span>
-      </div>
+    <div class="header">
+      <h1>لوحة الريسبشن - إدارة الحجوزات</h1>
+      <p>عيادة الشروق للرعاية الطبية الشاملة</p>
+    </div>
 
-      <div class="search-section">
-        <div class="search-box">
-          <i class="fa-solid fa-magnifying-glass" style="color: var(--primary);"></i>
-          <input type="text" id="search-input" placeholder="ادخل اسم المريض أو رقم الهاتف للبحث..." oninput="searchBookings()">
-        </div>
-        <button class="btn-search" onclick="searchBookings()"><i class="fa-solid fa-search"></i> بحث</button>
-        <button class="btn-reset" onclick="resetSearch()" title="إلغاء البحث"><i class="fa-solid fa-rotate-left"></i></button>
+    <div class="search-box">
+      <label><i class="fa-solid fa-magnifying-glass"></i> ابحث باسم المريض أو رقم الهاتف (اضغط Enter للبحث):</label>
+      <div class="search-row">
+        <input type="text" id="searchInput" class="search-input" placeholder="اكتب الاسم أو رقم الهاتف واضغط Enter..." onkeypress="handleKeyPress(event)" oninput="filterData()">
+        <button class="btn-search" onclick="filterData()"><i class="fa-solid fa-search"></i> بحث</button>
       </div>
-      
-      <div class="table-container">
-        <table>
-          <thead>
-            <tr>
-              <th>اسم المريض</th>
-              <th>رقم الهاتف</th>
-              <th>الطبيب المعالج</th>
-              <th>الخدمة</th>
-              <th>الموعد</th>
-              <th>الحالة</th>
-              <th>الإجراء</th>
-            </tr>
-          </thead>
-          <tbody id="bookings-table-body">
-            <!-- البيانات ستظهر هنا -->
-          </tbody>
-        </table>
-      </div>
+    </div>
+
+    <div id="list">
+      <div class="empty-msg">جاري تحميل الحجوزات من السحاب...</div>
     </div>
   </div>
 
   <script>
-    const scriptURL = "https://script.google.com/macros/s/AKfycbwv_DE3lO0r1NzgU5JSeevbWBI7-BaXgrfVxSpNzEcnMKDzfCI49WC98hkarNzfPEhq/exec";
+    const scriptURL = "https://script.google.com/macros/s/AKfycbwiZmkQMr_s4noSJtAd7MJq25QoMupnQS1_8Ko68nBCJvrZ6vLTqZPLgV4w5vi5BKQz/exec";
     let allBookings = [];
 
-    function loadBookings() {
-      const loadingText = document.getElementById('loading-text');
-      loadingText.innerText = 'جاري التحديث...';
-
-      const oldScript = document.getElementById('jsonp-script');
+    function fetchBookings() {
+      const oldScript = document.getElementById('jsonp-reception');
       if (oldScript) oldScript.remove();
 
       const script = document.createElement('script');
-      script.id = 'jsonp-script';
-      script.src = scriptURL + "?callback=handleResponse&t=" + Date.now();
-      script.onerror = function() {
-        loadingText.innerText = 'خطأ في الاتصال!';
-        document.getElementById('bookings-table-body').innerHTML = 
-          `<tr><td colspan="7" style="text-align: center; color: #dc2626; padding: 20px;">عذراً، حدث خطأ أثناء جلب البيانات!</td></tr>`;
-      };
+      script.id = 'jsonp-reception';
+      script.src = scriptURL + "?callback=renderData&t=" + Date.now();
       document.body.appendChild(script);
     }
 
-    function handleResponse(bookings) {
-      const loadingText = document.getElementById('loading-text');
-      allBookings = bookings.reverse();
-      renderTable(allBookings);
-      loadingText.innerText = 'تم التحديث بنجاح';
+    function renderData(data) {
+      allBookings = data || [];
+      filterData();
     }
 
-    function renderTable(data) {
-      const tbody = document.getElementById('bookings-table-body');
-      tbody.innerHTML = '';
+    function render(data) {
+      const list = document.getElementById('list');
+      list.innerHTML = '';
 
       if (!data || data.length === 0) {
-        tbody.innerHTML = `<tr><td colspan="7" style="text-align: center; color: #64748b; padding: 20px;">لا توجد حجوزات مطابقة.</td></tr>`;
+        list.innerHTML = `<div class="empty-msg"><i class="fa-solid fa-folder-open" style="font-size:2rem; margin-bottom:10px; display:block;"></i>لا توجد نتائج مطابقة للبحث.</div>`;
         return;
       }
 
-      data.forEach(b => {
-        let statusBadge = '';
-        if (b.status === 'pending') statusBadge = `<span class="status-badge status-pending">قيد الانتظار</span>`;
-        else if (b.status === 'approved') statusBadge = `<span class="status-badge status-approved">مؤكد</span>`;
-        else if (b.status === 'rejected') statusBadge = `<span class="status-badge status-rejected">ملغي</span>`;
+      data.slice().reverse().forEach(item => {
+        let badgeHtml = '';
+        if (item.status === 'pending') badgeHtml = `<span class="badge badge-pending">⏳ قيد الانتظار</span>`;
+        else if (item.status === 'approved') badgeHtml = `<span class="badge badge-approved">✅ تم القبول</span>`;
+        else if (item.status === 'rejected') badgeHtml = `<span class="badge badge-rejected">❌ تم التأجيل/الرفض</span>`;
 
-        const tr = document.createElement('tr');
-        tr.innerHTML = `
-          <td style="font-weight: 700;">${b.name || '-'}</td>
-          <td>${b.phone || '-'}</td>
-          <td>${b.doctor || '-'}</td>
-          <td>${b.service || '-'}</td>
-          <td>${b.day || ''} (${b.time || ''})</td>
-          <td>${statusBadge}</td>
-          <td>
-            <button class="btn-action btn-approve" onclick="updateStatus('${b.id}', 'approved')"><i class="fa-solid fa-check"></i> قبول</button>
-            <button class="btn-action btn-reject" onclick="updateStatus('${b.id}', 'rejected')"><i class="fa-solid fa-xmark"></i> رفض</button>
-          </td>
+        const card = document.createElement('div');
+        card.className = 'card';
+        card.innerHTML = `
+          <div class="card-header">
+            <span class="patient-name">${item.name}</span>
+            ${badgeHtml}
+          </div>
+          <div class="card-body">
+            <div class="info-item"><i class="fa-solid fa-phone"></i> ${item.phone}</div>
+            <div class="info-item"><i class="fa-solid fa-clock"></i> ${item.day} - ${item.time}</div>
+            <div class="info-item" style="grid-column: span 2"><i class="fa-solid fa-user-doctor"></i> ${item.dept}</div>
+            <div class="info-item" style="grid-column: span 2"><i class="fa-solid fa-notes-medical"></i> الكشف: ${item.service}</div>
+          </div>
+          
+          <div style="margin-top: 10px;">
+            <input type="text" id="note-${item.id}" class="note-input" placeholder="اكتب ملاحظة أو موعد بديل للمريض" value="${item.note || ''}">
+          </div>
+
+          <div class="actions">
+            <button class="btn btn-approve" onclick="updateStatus('${item.id}', 'approved')"><i class="fa-solid fa-check"></i> قبول الموعد</button>
+            <button class="btn btn-reject" onclick="updateStatus('${item.id}', 'rejected')"><i class="fa-solid fa-xmark"></i> رفض / تأجيل</button>
+            <button class="btn btn-delete" onclick="deleteItem('${item.id}')"><i class="fa-solid fa-trash"></i> حذف</button>
+          </div>
         `;
-        tbody.appendChild(tr);
+        list.appendChild(card);
       });
     }
 
-    function searchBookings() {
-      const query = document.getElementById('search-input').value.trim().toLowerCase();
-      if (!query) {
-        renderTable(allBookings);
-        return;
+    function handleKeyPress(e) {
+      if (e.key === 'Enter') {
+        filterData();
       }
-      const filtered = allBookings.filter(b => {
-        const nameMatch = b.name && b.name.toString().toLowerCase().includes(query);
-        const phoneMatch = b.phone && b.phone.toString().includes(query);
-        return nameMatch || phoneMatch;
-      });
-      renderTable(filtered);
     }
 
-    function resetSearch() {
-      document.getElementById('search-input').value = '';
-      renderTable(allBookings);
+    function filterData() {
+      const q = document.getElementById('searchInput').value.trim().toLowerCase();
+      const filtered = allBookings.filter(i => (i.name && i.name.toLowerCase().includes(q)) || (i.phone && i.phone.toString().includes(q)));
+      render(filtered);
     }
 
     async function updateStatus(id, newStatus) {
-      if(!confirm('هل أنت متأكد من تغيير حالة هذا الحجز؟')) return;
-      
+      const noteInput = document.getElementById(`note-${id}`);
+      const noteVal = noteInput ? noteInput.value.trim() : '';
+
       try {
         await fetch(scriptURL, {
           method: 'POST',
           mode: 'no-cors',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ action: "updateStatus", id: id, status: newStatus })
+          body: JSON.stringify({ action: "updateStatus", id: id, status: newStatus, note: noteVal })
         });
         alert('تم تحديث الحالة بنجاح!');
-        setTimeout(loadBookings, 1200);
+        setTimeout(fetchBookings, 1000);
       } catch (e) {
         alert('حدث خطأ أثناء التحديث.');
       }
     }
 
-    loadBookings();
-    setInterval(loadBookings, 30000);
+    async function deleteItem(id) {
+      if (confirm('هل أنت متأكد من إزالة هذا الحجز؟')) {
+        try {
+          await fetch(scriptURL, {
+            method: 'POST',
+            mode: 'no-cors',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ action: "deleteBooking", id: id })
+          });
+          alert('تم الحذف بنجاح!');
+          setTimeout(fetchBookings, 1000);
+        } catch (e) {
+          alert('حدث خطأ أثناء الحذف.');
+        }
+      }
+    }
+
+    fetchBookings();
+    setInterval(fetchBookings, 30000); // تحديث تلقائي كل 30 ثانية
   </script>
 </body>
 </html>
