@@ -16,10 +16,13 @@
     .container { max-width: 950px; margin: 20px auto; padding: 0 16px; width: 100%; flex: 1; }
     .card { background: var(--white); border-radius: var(--radius); padding: 20px; box-shadow: var(--shadow); border: 1px solid rgba(27, 77, 137, 0.08); margin-bottom: 20px; }
     
-    /* خانة البحث */
-    .search-box { display: flex; align-items: center; background: #f1f5f9; border: 1.5px solid #cbd5e1; border-radius: 10px; padding: 8px 14px; margin-bottom: 15px; gap: 10px; }
+    /* تصميم خانة البحث وزر البحث */
+    .search-section { display: flex; gap: 10px; margin-bottom: 15px; }
+    .search-box { flex: 1; display: flex; align-items: center; background: #f1f5f9; border: 1.5px solid #cbd5e1; border-radius: 10px; padding: 8px 14px; gap: 10px; }
     .search-box input { border: none; background: transparent; outline: none; width: 100%; font-size: 0.95rem; font-weight: 700; color: var(--text-dark); }
-    
+    .btn-search { background: var(--primary); color: white; border: none; padding: 0 20px; border-radius: 10px; font-weight: 800; cursor: pointer; display: flex; align-items: center; gap: 6px; font-size: 0.9rem; }
+    .btn-reset { background: #e2e8f0; color: #475569; border: none; padding: 0 15px; border-radius: 10px; font-weight: 700; cursor: pointer; }
+
     .table-container { overflow-x: auto; }
     table { width: 100%; border-collapse: collapse; margin-top: 10px; text-align: right; font-size: 0.9rem; }
     th, td { padding: 12px 10px; border-bottom: 1px solid #edf2f7; }
@@ -41,7 +44,7 @@
       <h1>لوحة تحكم الاستقبال</h1>
       <p>عيادة الشروق للرعاية الطبية</p>
     </div>
-    <button class="refresh-btn" onclick="loadBookings()"><i class="fa-solid fa-rotate"></i> تحديث الحجوزات</button>
+    <button class="refresh-btn" onclick="loadBookings()"><i class="fa-solid fa-rotate"></i> تحديث القائمة</button>
   </header>
 
   <div class="container">
@@ -51,10 +54,14 @@
         <span id="loading-text" style="font-size: 0.85rem; color: #64748b;">جاري التحميل...</span>
       </div>
 
-      <!-- خانة البحث بالاسم أو التليفون -->
-      <div class="search-box">
-        <i class="fa-solid fa-magnifying-glass" style="color: var(--primary);"></i>
-        <input type="text" id="search-input" placeholder="ابحث باسم المريض أو رقم الهاتف..." oninput="filterBookings()">
+      <!-- قسم البحث بالرقم أو الاسم -->
+      <div class="search-section">
+        <div class="search-box">
+          <i class="fa-solid fa-magnifying-glass" style="color: var(--primary);"></i>
+          <input type="text" id="search-input" placeholder="ادخل اسم المريض أو رقم الهاتف للبحث..." onkeypress="if(event.key === 'Enter') searchBookings()">
+        </div>
+        <button class="btn-search" onclick="searchBookings()"><i class="fa-solid fa-search"></i> بحث</button>
+        <button class="btn-reset" onclick="resetSearch()" title="إلغاء البحث وعرض الكل"><i class="fa-solid fa-rotate-left"></i></button>
       </div>
       
       <div class="table-container">
@@ -71,7 +78,7 @@
             </tr>
           </thead>
           <tbody id="bookings-table-body">
-            <!-- سيتم تعبئة الحجوزات تلقائياً هنا -->
+            <!-- الحجوزات هتظهر هنا -->
           </tbody>
         </table>
       </div>
@@ -79,29 +86,32 @@
   </div>
 
   <script>
-    const rawScriptURL = "https://script.google.com/macros/s/AKfycbx2CcTc_s0yDKAJ6sqa2o3lajsicgqs_mZbThjxi717U0jkCfyU5PdC_iYXvb9nueliWg/exec";
-    // رابط بروكسي لتفادي حظر الحماية CORS
-    const fetchURL = "https://api.allorigins.win/raw?url=" + encodeURIComponent(rawScriptURL);
-
+    const scriptURL = "https://script.google.com/macros/s/AKfycbx2CcTc_s0yDKAJ6sqa2o3lajsicgqs_mZbThjxi717U0jkCfyU5PdC_iYXvb9nueliWg/exec";
     let allBookings = [];
 
-    async function loadBookings() {
-      const tbody = document.getElementById('bookings-table-body');
+    function loadBookings() {
       const loadingText = document.getElementById('loading-text');
       loadingText.innerText = 'جاري التحديث...';
 
-      try {
-        const response = await fetch(fetchURL + "&t=" + Date.now());
-        const bookings = await response.json();
-        
-        allBookings = bookings.reverse(); // حفظ الحجوزات وترتيبها من الأحدث
-        renderTable(allBookings);
-        loadingText.innerText = 'تم التحديث بنجاح';
-      } catch (e) {
-        console.error(e);
+      const oldScript = document.getElementById('jsonp-script');
+      if (oldScript) oldScript.remove();
+
+      const script = document.createElement('script');
+      script.id = 'jsonp-script';
+      script.src = scriptURL + "?callback=handleResponse&t=" + Date.now();
+      script.onerror = function() {
         loadingText.innerText = 'خطأ في الاتصال!';
-        tbody.innerHTML = `<tr><td colspan="7" style="text-align: center; color: #dc2626; padding: 20px;">عذراً، حدث خطأ في الاتصال بالسيرفر! اضغط تحديث للحاولة مجدداً.</td></tr>`;
-      }
+        document.getElementById('bookings-table-body').innerHTML = 
+          `<tr><td colspan="7" style="text-align: center; color: #dc2626; padding: 20px;">عذراً، حدث خطأ أثناء الاتصال بالسيرفر!</td></tr>`;
+      };
+      document.body.appendChild(script);
+    }
+
+    function handleResponse(bookings) {
+      const loadingText = document.getElementById('loading-text');
+      allBookings = bookings.reverse();
+      renderTable(allBookings);
+      loadingText.innerText = 'تم التحديث بنجاح';
     }
 
     function renderTable(data) {
@@ -109,7 +119,7 @@
       tbody.innerHTML = '';
 
       if (!data || data.length === 0) {
-        tbody.innerHTML = `<tr><td colspan="7" style="text-align: center; color: #64748b; padding: 20px;">لا توجد حجوزات مطابقة للبحث.</td></tr>`;
+        tbody.innerHTML = `<tr><td colspan="7" style="text-align: center; color: #64748b; padding: 20px;">لا توجد نتائج مطابقة للبحث.</td></tr>`;
         return;
       }
 
@@ -136,11 +146,11 @@
       });
     }
 
-    // دالة الفلترة والبحث اللحظي
-    function filterBookings() {
+    // دالة البحث عند الضغط على زر بحث أو Enter
+    function searchBookings() {
       const query = document.getElementById('search-input').value.trim().toLowerCase();
       if (!query) {
-        renderTable(allBookings);
+        alert('برجاء إدخال اسم المريض أو رقم الهاتف للبحث.');
         return;
       }
       const filtered = allBookings.filter(b => {
@@ -151,11 +161,17 @@
       renderTable(filtered);
     }
 
+    // زر العودة لعرض كل الحجوزات
+    function resetSearch() {
+      document.getElementById('search-input').value = '';
+      renderTable(allBookings);
+    }
+
     async function updateStatus(id, newStatus) {
       if(!confirm('هل أنت متأكد من تغيير حالة هذا الحجز؟')) return;
       
       try {
-        await fetch(rawScriptURL, {
+        await fetch(scriptURL, {
           method: 'POST',
           mode: 'no-cors',
           headers: { 'Content-Type': 'application/json' },
@@ -169,7 +185,7 @@
     }
 
     loadBookings();
-    setInterval(loadBookings, 30000); // تحديث القائمة تلقائياً كل 30 ثانية
+    setInterval(loadBookings, 30000);
   </script>
 </body>
 </html>
