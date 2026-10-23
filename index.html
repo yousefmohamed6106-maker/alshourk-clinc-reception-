@@ -56,7 +56,7 @@
       <div class="search-section">
         <div class="search-box">
           <i class="fa-solid fa-magnifying-glass" style="color: var(--primary);"></i>
-          <input type="text" id="search-input" placeholder="ادخل اسم المريض أو رقم الهاتف للبحث..." onkeypress="if(event.key === 'Enter') searchBookings()">
+          <input type="text" id="search-input" placeholder="ادخل اسم المريض أو رقم الهاتف للبحث..." oninput="searchBookings()">
         </div>
         <button class="btn-search" onclick="searchBookings()"><i class="fa-solid fa-search"></i> بحث</button>
         <button class="btn-reset" onclick="resetSearch()" title="إلغاء البحث"><i class="fa-solid fa-rotate-left"></i></button>
@@ -68,15 +68,15 @@
             <tr>
               <th>اسم المريض</th>
               <th>رقم الهاتف</th>
-              <th>العيادة والطبيب</th>
-              <th>نوع الكشف</th>
+              <th>الطبيب المعالج</th>
+              <th>الخدمة</th>
               <th>الموعد</th>
               <th>الحالة</th>
               <th>الإجراء</th>
             </tr>
           </thead>
           <tbody id="bookings-table-body">
-            <!-- البيانات هتظهر هنا -->
+            <!-- البيانات ستظهر هنا -->
           </tbody>
         </table>
       </div>
@@ -84,8 +84,7 @@
   </div>
 
   <script>
-    // ضع رابط سكريبت جوجل الخاص بك هنا
-    const scriptURL = "https://script.google.com/macros/s/AKfycbyFTIfyztyJRblda7Yl3MGBeBmYd_DbGOcTUnLnFNPa3rgphgsw3lXLpMlfud53mDVl/exec";
+    const scriptURL = "YOUR_APPS_SCRIPT_URL_HERE";
     let allBookings = [];
 
     function loadBookings() {
@@ -118,7 +117,7 @@
       tbody.innerHTML = '';
 
       if (!data || data.length === 0) {
-        tbody.innerHTML = `<tr><td colspan="7" style="text-align: center; color: #64748b; padding: 20px;">لا توجد حجوزات حتى الآن.</td></tr>`;
+        tbody.innerHTML = `<tr><td colspan="7" style="text-align: center; color: #64748b; padding: 20px;">لا توجد حجوزات مطابقة.</td></tr>`;
         return;
       }
 
@@ -132,7 +131,7 @@
         tr.innerHTML = `
           <td style="font-weight: 700;">${b.name || '-'}</td>
           <td>${b.phone || '-'}</td>
-          <td>${b.dept || '-'}</td>
+          <td>${b.doctor || '-'}</td>
           <td>${b.service || '-'}</td>
           <td>${b.day || ''} (${b.time || ''})</td>
           <td>${statusBadge}</td>
@@ -148,11 +147,11 @@
     function searchBookings() {
       const query = document.getElementById('search-input').value.trim().toLowerCase();
       if (!query) {
-        alert('برجاء إدخال اسم المريض أو رقم الهاتف للبحث.');
+        renderTable(allBookings);
         return;
       }
       const filtered = allBookings.filter(b => {
-        const nameMatch = b.name && b.name.toLowerCase().includes(query);
+        const nameMatch = b.name && b.name.toString().toLowerCase().includes(query);
         const phoneMatch = b.phone && b.phone.toString().includes(query);
         return nameMatch || phoneMatch;
       });
