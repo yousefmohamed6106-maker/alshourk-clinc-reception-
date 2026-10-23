@@ -73,7 +73,7 @@
   </div>
 
   <script>
-    const scriptURL = "https://script.google.com/macros/s/AKfycbwJ8xucvL8X9BGHrs5bEC2jth2ynEK8ZxaQ4vlWt8SIjj5Usal_kP1z1X4-gK9vsFAg/exec";
+    const scriptURL = "https://script.google.com/macros/s/AKfycbxNccMLjGp4cBSSyeuPWSKgsR-fj506EjrNV0emnF-nobtuqLjU-ZWtkJxshCWPiFz9/exec";
     let allBookings = [];
 
     function fetchBookings() {
@@ -91,7 +91,6 @@
       filterData();
     }
 
-    // دالة لتنظيف وتنسيق الوقت المكتوب بشكل مبسط
     function cleanDateTime(day, time) {
       let cleanDay = day ? day.toString() : '';
       let cleanTime = time ? time.toString() : '';
@@ -127,6 +126,7 @@
 
         const card = document.createElement('div');
         card.className = 'card';
+        card.id = `card-${item.id}`;
         card.innerHTML = `
           <div class="card-header">
             <span class="patient-name">${item.name || 'بدون اسم'}</span>
@@ -140,7 +140,7 @@
           </div>
           
           <div style="margin-top: 10px;">
-            <input type="text" id="note-${item.id}" class="note-input" placeholder="اكتب ملاحظة أو موعد بديل للمريض" value="${item.note || ''}">
+            <input type="text" id="note-${item.id}" class="note-input" placeholder="اكتب ملاحظة أو موعد بديل للمريض (مثال: تعال الساعة 7)" value="${item.note || ''}">
           </div>
 
           <div class="actions">
@@ -176,15 +176,20 @@
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ action: "updateStatus", id: id, status: newStatus, note: noteVal })
         });
-        alert('تم تحديث الحالة بنجاح!');
-        setTimeout(fetchBookings, 1000);
+        
+        alert(newStatus === 'approved' ? 'تم قبول الموعد بنجاح!' : 'تم رفض/تأجيل الموعد وإرسال الملاحظة للمريض!');
+        setTimeout(fetchBookings, 1200);
       } catch (e) {
         alert('حدث خطأ أثناء التحديث.');
       }
     }
 
     async function deleteItem(id) {
-      if (confirm('هل أنت متأكد من إزالة هذا الحجز؟')) {
+      if (confirm('هل أنت متأكد من إزالة هذا الحجز نهائياً؟')) {
+        // إخفاء الكارت فوراً لتجربة استخدام سريعة
+        const cardElem = document.getElementById(`card-${id}`);
+        if (cardElem) cardElem.style.display = 'none';
+
         try {
           await fetch(scriptURL, {
             method: 'POST',
@@ -192,10 +197,11 @@
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ action: "deleteBooking", id: id })
           });
-          alert('تم الحذف بنجاح!');
+          alert('تم حذف الحجز بنجاح!');
           setTimeout(fetchBookings, 1000);
         } catch (e) {
           alert('حدث خطأ أثناء الحذف.');
+          if (cardElem) cardElem.style.display = 'block';
         }
       }
     }
