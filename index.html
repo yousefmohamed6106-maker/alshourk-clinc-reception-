@@ -3,159 +3,123 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>لوحة الريسبشن - عيادة الشروق</title>
-  <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-  <style>
-    :root {
-      --primary: #1b4d89;
-      --primary-dark: #0f3057;
-      --gold: #d4af37;
-      --bg-light: #f4f7fb;
-      --text-dark: #223354;
-      --white: #ffffff;
-      --shadow: 0 10px 30px rgba(27, 77, 137, 0.1);
-      --radius: 16px;
-    }
-
-    * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Tajawal', sans-serif; }
-    body { background-color: var(--bg-light); color: var(--text-dark); min-height: 100vh; padding: 20px 10px; }
-    .header { background: linear-gradient(135deg, var(--primary-dark), var(--primary)); color: var(--white); padding: 20px; border-radius: var(--radius); text-align: center; margin-bottom: 20px; box-shadow: var(--shadow); }
-    .header h1 { font-size: 1.5rem; margin-bottom: 5px; }
-    .header p { color: var(--gold); font-weight: 700; font-size: 0.9rem; }
-    .container { max-width: 650px; margin: 0 auto; }
-    
-    .search-box { background: var(--white); padding: 18px; border-radius: var(--radius); box-shadow: var(--shadow); margin-bottom: 20px; border: 1px solid rgba(27, 77, 137, 0.1); }
-    .search-box label { font-weight: 800; color: var(--primary-dark); display: block; margin-bottom: 8px; }
-    .search-row { display: flex; gap: 8px; }
-    .search-input { flex: 1; padding: 12px 15px; border: 2px solid #cbd5e1; border-radius: 10px; font-size: 1rem; outline: none; }
-    .search-input:focus { border-color: var(--primary); }
-    .btn-search { background: var(--primary); color: white; border: none; padding: 0 20px; border-radius: 10px; font-weight: 800; cursor: pointer; display: flex; align-items: center; gap: 8px; }
-
-    .card { background: var(--white); border-radius: var(--radius); padding: 18px; box-shadow: var(--shadow); margin-bottom: 15px; border-right: 5px solid var(--primary); }
-    .card-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #edf2f7; padding-bottom: 10px; margin-bottom: 10px; }
-    .patient-name { font-size: 1.2rem; font-weight: 800; color: var(--primary-dark); }
-    .card-body { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; font-size: 0.9rem; font-weight: 600; }
-    .info-item { display: flex; align-items: center; gap: 8px; color: #475569; }
-    .info-item i { color: var(--gold); }
-    .actions { margin-top: 15px; padding-top: 10px; border-top: 1px dashed #e2e8f0; display: flex; gap: 10px; flex-wrap: wrap; }
-    .btn { border: none; padding: 8px 16px; border-radius: 8px; font-weight: 800; cursor: pointer; display: flex; align-items: center; gap: 6px; }
-    .btn-approve { background: #dcfce7; color: #15803d; }
-    .btn-reject { background: #fee2e2; color: #b91c1c; }
-    .btn-delete { background: #f1f5f9; color: #64748b; margin-right: auto; }
-    .note-input { width: 100%; padding: 8px 12px; border: 1.5px solid #cbd5e1; border-radius: 8px; margin-top: 8px; font-size: 0.85rem; outline: none; }
-    .badge { padding: 5px 12px; border-radius: 12px; font-size: 0.8rem; font-weight: 800; }
-    .badge-pending { background: #fef3c7; color: #d97706; }
-    .badge-approved { background: #dcfce7; color: #15803d; }
-    .badge-rejected { background: #fee2e2; color: #b91c1c; }
-    .empty-msg { text-align: center; padding: 30px; background: var(--white); border-radius: var(--radius); color: #64748b; font-weight: 700; }
-  </style>
+  <title>لوحة الريسبشن - إدارة الحجوزات</title>
+  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/lib/font-awesome/6.4.0/css/all.min.css">
+  <!-- Firebase SDK -->
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
 </head>
 <body>
 
-  <div class="container">
-    <div class="header">
+  <header class="main-header">
+    <div class="header-container">
       <h1>لوحة الريسبشن - إدارة الحجوزات</h1>
       <p>عيادة الشروق للرعاية الطبية الشاملة</p>
     </div>
+  </header>
 
+  <div class="reception-card">
     <div class="search-box">
-      <label><i class="fa-solid fa-magnifying-glass"></i> ابحث باسم المريض أو رقم الهاتف (اضغط Enter للبحث):</label>
-      <div class="search-row">
-        <input type="text" id="searchInput" class="search-input" placeholder="اكتب الاسم أو رقم الهاتف واضغط Enter..." onkeypress="handleKeyPress(event)" oninput="filterData()">
-        <button class="btn-search" onclick="filterData()"><i class="fa-solid fa-search"></i> بحث</button>
-      </div>
+      <i class="fa-solid fa-magnifying-glass search-icon"></i>
+      <input type="tel" id="searchBar" placeholder="ابحث برقم الهاتف أو اسم المريض..." onkeyup="filterAppointments()">
     </div>
 
-    <div id="list"></div>
+    <div class="table-container">
+      <table>
+        <thead>
+          <tr>
+            <th>الاسم ثلاثياً</th>
+            <th>رقم الهاتف</th>
+            <th>العيادة والراعي</th>
+            <th>نوع الكشف</th>
+            <th>اليوم والموعد</th>
+            <th>الحالة</th>
+            <th>الإجراءات</th>
+          </tr>
+        </thead>
+        <tbody id="appointmentsTable">
+          <!-- البيانات بتنزل هنا تلقائياً -->
+        </tbody>
+      </table>
+    </div>
+
+    <div id="emptyState" class="empty-state">
+      <i class="fa-solid fa-calendar-xmark" style="font-size: 2.5rem; color: #cbd5e1; margin-bottom: 10px;"></i>
+      <p>لا توجد حجوزات مسجلة حالياً.</p>
+    </div>
   </div>
 
   <script>
-    function getData() {
-      return JSON.parse(localStorage.getItem('shorouk_appointments') || '[]');
-    }
+    // تهيئة Firebase السحابية بنفس القاعدة
+    const firebaseConfig = {
+      databaseURL: "https://alshourk-clinic-default-rtdb.firebaseio.com/"
+    };
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.database();
 
-    function render(data) {
-      const list = document.getElementById('list');
-      list.innerHTML = '';
+    let allAppointments = [];
 
-      if (!data || data.length === 0) {
-        list.innerHTML = `<div class="empty-msg"><i class="fa-solid fa-folder-open" style="font-size:2rem; margin-bottom:10px; display:block;"></i>لا توجد نتائج مطابقة للبحث.</div>`;
+    // جلب البيانات فورياً في نفس اللحظة من السحابة
+    db.ref('appointments').on('value', (snapshot) => {
+      let data = snapshot.val();
+      allAppointments = [];
+      if (data) {
+        for (let key in data) {
+          allAppointments.push(data[key]);
+        }
+      }
+      renderTable(allAppointments);
+    });
+
+    function renderTable(list) {
+      let tbody = document.getElementById('appointmentsTable');
+      let emptyState = document.getElementById('emptyState');
+
+      tbody.innerHTML = '';
+
+      if (list.length === 0) {
+        emptyState.style.display = 'block';
         return;
       }
 
-      data.slice().reverse().forEach(item => {
-        let badgeHtml = '';
-        if (item.status === 'pending') badgeHtml = `<span class="badge badge-pending">⏳ قيد الانتظار</span>`;
-        else if (item.status === 'approved') badgeHtml = `<span class="badge badge-approved">✅ تم القبول</span>`;
-        else if (item.status === 'rejected') badgeHtml = `<span class="badge badge-rejected">❌ تم التأجيل/الرفض</span>`;
+      emptyState.style.display = 'none';
 
-        const card = document.createElement('div');
-        card.className = 'card';
-        card.innerHTML = `
-          <div class="card-header">
-            <span class="patient-name">${item.name}</span>
-            ${badgeHtml}
-          </div>
-          <div class="card-body">
-            <div class="info-item"><i class="fa-solid fa-phone"></i> ${item.phone}</div>
-            <div class="info-item"><i class="fa-solid fa-clock"></i> ${item.day} - ${item.time}</div>
-            <div class="info-item" style="grid-column: span 2"><i class="fa-solid fa-user-doctor"></i> ${item.dept}</div>
-            <div class="info-item" style="grid-column: span 2"><i class="fa-solid fa-notes-medical"></i> الكشف: ${item.service}</div>
-          </div>
-          
-          <div style="margin-top: 10px;">
-            <input type="text" id="note-${item.id}" class="note-input" placeholder="اكتب ملاحظة أو موعد بديل للمريض" value="${item.note || ''}">
-          </div>
-
-          <div class="actions">
-            <button class="btn btn-approve" onclick="updateStatus(${item.id}, 'approved')"><i class="fa-solid fa-check"></i> قبول الموعد</button>
-            <button class="btn btn-reject" onclick="updateStatus(${item.id}, 'rejected')"><i class="fa-solid fa-xmark"></i> رفض / تأجيل</button>
-            <button class="btn btn-delete" onclick="deleteItem(${item.id})"><i class="fa-solid fa-trash"></i> حذف</button>
-          </div>
+      list.reverse().forEach(app => {
+        let tr = document.createElement('tr');
+        tr.innerHTML = `
+          <td style="font-weight:bold;">${app.name}</td>
+          <td><a href="tel:${app.phone}" style="color:#2b6cb0; text-decoration:none;"><i class="fa-solid fa-phone"></i> ${app.phone}</a></td>
+          <td>${app.clinic}</td>
+          <td><span style="background:#edf2f7; padding:4px 8px; border-radius:4px; font-size:0.85rem;">${app.type}</span></td>
+          <td><strong>${app.day}</strong> - ${app.time}</td>
+          <td><span class="status-badge ${app.status.includes('مقبول') ? 'status-confirmed' : 'status-pending'}">${app.status}</span></td>
+          <td>
+            <button onclick="updateStatus('${app.phone}', 'تم القبول (تأكيد الحجز)')" style="background:#2e7d32; color:white; border:none; padding:6px 10px; border-radius:4px; cursor:pointer; font-size:0.8rem; margin-left:4px;">قبول</button>
+            <button onclick="deleteBooking('${app.phone}')" style="background:#c53030; color:white; border:none; padding:6px 10px; border-radius:4px; cursor:pointer; font-size:0.8rem;">حذف</button>
+          </td>
         `;
-        list.appendChild(card);
+        tbody.appendChild(tr);
       });
     }
 
-    function handleKeyPress(e) {
-      if (e.key === 'Enter') {
-        filterData();
+    function filterAppointments() {
+      let query = document.getElementById('searchBar').value.toLowerCase();
+      let filtered = allAppointments.filter(app => 
+        app.name.toLowerCase().includes(query) || app.phone.includes(query)
+      );
+      renderTable(filtered);
+    }
+
+    function updateStatus(phone, newStatus) {
+      db.ref('appointments/' + phone + '/status').set(newStatus);
+    }
+
+    function deleteBooking(phone) {
+      if (confirm('هل أنت تأكد من حذف هذا الحجز؟')) {
+        db.ref('appointments/' + phone).remove();
       }
     }
-
-    function filterData() {
-      const q = document.getElementById('searchInput').value.trim().toLowerCase();
-      const all = getData();
-      const filtered = all.filter(i => i.name.toLowerCase().includes(q) || i.phone.includes(q));
-      render(filtered);
-    }
-
-    function updateStatus(id, newStatus) {
-      let data = getData();
-      const noteInput = document.getElementById(`note-${id}`);
-      const noteVal = noteInput ? noteInput.value.trim() : '';
-
-      data = data.map(item => {
-        if (item.id === id) {
-          return { ...item, status: newStatus, note: noteVal };
-        }
-        return item;
-      });
-
-      localStorage.setItem('shorouk_appointments', JSON.stringify(data));
-      filterData();
-    }
-
-    function deleteItem(id) {
-      if (confirm('هل أنت تأكد من إزالة هذا الحجز؟')) {
-        let data = getData().filter(item => item.id !== id);
-        localStorage.setItem('shorouk_appointments', JSON.stringify(data));
-        filterData();
-      }
-    }
-
-    render(getData());
   </script>
 </body>
 </html>
