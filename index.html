@@ -5,8 +5,8 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>لوحة الريسبشن - إدارة الحجوزات</title>
   <link rel="stylesheet" href="style.css">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/lib/font-awesome/6.4.0/css/all.min.css">
-  <!-- Firebase SDK -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <!-- Firebase -->
   <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
   <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
 </head>
@@ -31,7 +31,7 @@
           <tr>
             <th>الاسم ثلاثياً</th>
             <th>رقم الهاتف</th>
-            <th>العيادة والراعي</th>
+            <th>العيادة والطبيب</th>
             <th>نوع الكشف</th>
             <th>اليوم والموعد</th>
             <th>الحالة</th>
@@ -39,7 +39,6 @@
           </tr>
         </thead>
         <tbody id="appointmentsTable">
-          <!-- البيانات بتنزل هنا تلقائياً -->
         </tbody>
       </table>
     </div>
@@ -51,7 +50,6 @@
   </div>
 
   <script>
-    // تهيئة Firebase السحابية بنفس القاعدة
     const firebaseConfig = {
       databaseURL: "https://alshourk-clinic-default-rtdb.firebaseio.com/"
     };
@@ -60,7 +58,6 @@
 
     let allAppointments = [];
 
-    // جلب البيانات فورياً في نفس اللحظة من السحابة
     db.ref('appointments').on('value', (snapshot) => {
       let data = snapshot.val();
       allAppointments = [];
@@ -88,15 +85,15 @@
       list.reverse().forEach(app => {
         let tr = document.createElement('tr');
         tr.innerHTML = `
-          <td style="font-weight:bold;">${app.name}</td>
-          <td><a href="tel:${app.phone}" style="color:#2b6cb0; text-decoration:none;"><i class="fa-solid fa-phone"></i> ${app.phone}</a></td>
+          <td><strong>${app.name}</strong></td>
+          <td><a href="tel:${app.phone}">${app.phone}</a></td>
           <td>${app.clinic}</td>
-          <td><span style="background:#edf2f7; padding:4px 8px; border-radius:4px; font-size:0.85rem;">${app.type}</span></td>
-          <td><strong>${app.day}</strong> - ${app.time}</td>
-          <td><span class="status-badge ${app.status.includes('مقبول') ? 'status-confirmed' : 'status-pending'}">${app.status}</span></td>
+          <td>${app.type}</td>
+          <td>${app.day} - ${app.time}</td>
+          <td><span class="status-badge">${app.status}</span></td>
           <td>
-            <button onclick="updateStatus('${app.phone}', 'تم القبول (تأكيد الحجز)')" style="background:#2e7d32; color:white; border:none; padding:6px 10px; border-radius:4px; cursor:pointer; font-size:0.8rem; margin-left:4px;">قبول</button>
-            <button onclick="deleteBooking('${app.phone}')" style="background:#c53030; color:white; border:none; padding:6px 10px; border-radius:4px; cursor:pointer; font-size:0.8rem;">حذف</button>
+            <button onclick="updateStatus('${app.phone}', 'تم القبول')" style="background:#2e7d32; color:#fff; border:none; padding:5px 8px; border-radius:4px; cursor:pointer;">قبول</button>
+            <button onclick="deleteBooking('${app.phone}')" style="background:#c53030; color:#fff; border:none; padding:5px 8px; border-radius:4px; cursor:pointer;">حذف</button>
           </td>
         `;
         tbody.appendChild(tr);
