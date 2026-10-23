@@ -68,12 +68,12 @@
     </div>
 
     <div id="list">
-      <div class="empty-msg">جاري تحميل الحجوزات من السحاب...</div>
+      <div class="empty-msg">جاري تحميل الحجوزات...</div>
     </div>
   </div>
 
   <script>
-    const scriptURL = "https://script.google.com/macros/s/AKfycbzTXhBrqqdXgL-ZA_k9cUthAlVJc47aVs3vcwyeJkEr6w7r3oZt8t6sdWCQyzpeYCYl/exec";
+    const scriptURL = "https://script.google.com/macros/s/AKfycbwJ8xucvL8X9BGHrs5bEC2jth2ynEK8ZxaQ4vlWt8SIjj5Usal_kP1z1X4-gK9vsFAg/exec";
     let allBookings = [];
 
     function fetchBookings() {
@@ -91,6 +91,23 @@
       filterData();
     }
 
+    // دالة لتنظيف وتنسيق الوقت المكتوب بشكل مبسط
+    function cleanDateTime(day, time) {
+      let cleanDay = day ? day.toString() : '';
+      let cleanTime = time ? time.toString() : '';
+
+      if (cleanDay.includes('T')) cleanDay = cleanDay.split('T')[0];
+      if (cleanTime.includes('T')) {
+        let parts = cleanTime.split('T')[1];
+        cleanTime = parts.substring(0, 5);
+      }
+
+      if (!cleanDay && !cleanTime) return 'غير محدد';
+      if (!cleanTime) return cleanDay;
+      if (!cleanDay) return cleanTime;
+      return `${cleanDay} - ${cleanTime}`;
+    }
+
     function render(data) {
       const list = document.getElementById('list');
       list.innerHTML = '';
@@ -106,18 +123,20 @@
         else if (item.status === 'approved') badgeHtml = `<span class="badge badge-approved">✅ تم القبول</span>`;
         else if (item.status === 'rejected') badgeHtml = `<span class="badge badge-rejected">❌ تم التأجيل/الرفض</span>`;
 
+        const displayDateTime = cleanDateTime(item.day, item.time);
+
         const card = document.createElement('div');
         card.className = 'card';
         card.innerHTML = `
           <div class="card-header">
-            <span class="patient-name">${item.name}</span>
+            <span class="patient-name">${item.name || 'بدون اسم'}</span>
             ${badgeHtml}
           </div>
           <div class="card-body">
-            <div class="info-item"><i class="fa-solid fa-phone"></i> ${item.phone}</div>
-            <div class="info-item"><i class="fa-solid fa-clock"></i> ${item.day} - ${item.time}</div>
-            <div class="info-item" style="grid-column: span 2"><i class="fa-solid fa-user-doctor"></i> ${item.dept}</div>
-            <div class="info-item" style="grid-column: span 2"><i class="fa-solid fa-notes-medical"></i> الكشف: ${item.service}</div>
+            <div class="info-item"><i class="fa-solid fa-phone"></i> ${item.phone || '-'}</div>
+            <div class="info-item"><i class="fa-solid fa-clock"></i> ${displayDateTime}</div>
+            <div class="info-item" style="grid-column: span 2"><i class="fa-solid fa-user-doctor"></i> ${item.dept || '-'}</div>
+            <div class="info-item" style="grid-column: span 2"><i class="fa-solid fa-notes-medical"></i> الكشف: ${item.service || '-'}</div>
           </div>
           
           <div style="margin-top: 10px;">
@@ -182,7 +201,7 @@
     }
 
     fetchBookings();
-    setInterval(fetchBookings, 30000); // تحديث تلقائي كل 30 ثانية
+    setInterval(fetchBookings, 30000);
   </script>
 </body>
 </html>
