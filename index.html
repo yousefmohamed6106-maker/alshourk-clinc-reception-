@@ -10,13 +10,12 @@
     :root { --primary: #1b4d89; --primary-dark: #0f3057; --gold: #d4af37; --bg-light: #f4f7fb; --text-dark: #223354; --white: #ffffff; --shadow: 0 10px 30px rgba(27, 77, 137, 0.1); --radius: 16px; }
     * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Tajawal', sans-serif; direction: rtl; }
     body { background-color: var(--bg-light); color: var(--text-dark); min-height: 100vh; display: flex; flex-direction: column; text-align: right; }
-    header { background: linear-gradient(135deg, var(--primary-dark), var(--primary)); color: var(--white); padding: 20px 15px; text-align: center; border-bottom-left-radius: 25px; border-bottom-right-radius: 25px; box-shadow: 0 4px 15px rgba(0,0,0,0.15); display: flex; justify-content: space-between; align-items: center; }
+    header { background: linear-gradient(135deg, var(--primary-dark), var(--primary)); color: var(--white); padding: 20px 25px; text-align: center; border-bottom-left-radius: 25px; border-bottom-right-radius: 25px; box-shadow: 0 4px 15px rgba(0,0,0,0.15); display: flex; justify-content: space-between; align-items: center; }
     header h1 { font-size: 1.3rem; font-weight: 800; }
-    header p { color: var(--gold); font-size: 0.8rem; font-weight: 700; }
-    .container { max-width: 950px; margin: 20px auto; padding: 0 16px; width: 100%; flex: 1; }
+    header p { color: var(--gold); font-size: 0.85rem; font-weight: 700; }
+    .container { max-width: 1000px; margin: 20px auto; padding: 0 16px; width: 100%; flex: 1; }
     .card { background: var(--white); border-radius: var(--radius); padding: 20px; box-shadow: var(--shadow); border: 1px solid rgba(27, 77, 137, 0.08); margin-bottom: 20px; }
     
-    /* ضبط اتجاه قسم البحث ليظهر بشكل صحيح يميناً ويساراً */
     .search-section { display: flex; gap: 10px; margin-bottom: 15px; direction: rtl; }
     .search-box { flex: 1; display: flex; align-items: center; background: #f1f5f9; border: 1.5px solid #cbd5e1; border-radius: 10px; padding: 8px 14px; gap: 10px; }
     .search-box input { border: none; background: transparent; outline: none; width: 100%; font-size: 0.95rem; font-weight: 700; color: var(--text-dark); text-align: right; }
@@ -39,7 +38,7 @@
 </head>
 <body>
 
-  <header style="padding: 15px 25px;">
+  <header>
     <div>
       <h1>لوحة تحكم الاستقبال</h1>
       <p>عيادة الشروق للرعاية الطبية</p>
@@ -54,14 +53,13 @@
         <span id="loading-text" style="font-size: 0.85rem; color: #64748b;">جاري التحميل...</span>
       </div>
 
-      <!-- قسم البحث المعدل والمنضبط يميناً -->
       <div class="search-section">
         <div class="search-box">
           <i class="fa-solid fa-magnifying-glass" style="color: var(--primary);"></i>
           <input type="text" id="search-input" placeholder="ادخل اسم المريض أو رقم الهاتف للبحث..." onkeypress="if(event.key === 'Enter') searchBookings()">
         </div>
         <button class="btn-search" onclick="searchBookings()"><i class="fa-solid fa-search"></i> بحث</button>
-        <button class="btn-reset" onclick="resetSearch()" title="إلغاء البحث وعرض الكل"><i class="fa-solid fa-rotate-left"></i></button>
+        <button class="btn-reset" onclick="resetSearch()" title="إلغاء البحث"><i class="fa-solid fa-rotate-left"></i></button>
       </div>
       
       <div class="table-container">
@@ -78,7 +76,7 @@
             </tr>
           </thead>
           <tbody id="bookings-table-body">
-            <!-- الحجوزات هتظهر هنا -->
+            <!-- البيانات هتظهر هنا -->
           </tbody>
         </table>
       </div>
@@ -86,7 +84,8 @@
   </div>
 
   <script>
-    const scriptURL = "https://script.google.com/macros/s/AKfycbx2CcTc_s0yDKAJ6sqa2o3lajsicgqs_mZbThjxi717U0jkCfyU5PdC_iYXvb9nueliWg/exec";
+    // ضع رابط سكريبت جوجل الخاص بك هنا
+    const scriptURL = "https://script.google.com/macros/s/AKfycbyFTIfyztyJRblda7Yl3MGBeBmYd_DbGOcTUnLnFNPa3rgphgsw3lXLpMlfud53mDVl/exec";
     let allBookings = [];
 
     function loadBookings() {
@@ -102,7 +101,7 @@
       script.onerror = function() {
         loadingText.innerText = 'خطأ في الاتصال!';
         document.getElementById('bookings-table-body').innerHTML = 
-          `<tr><td colspan="7" style="text-align: center; color: #dc2626; padding: 20px;">عذراً، حدث خطأ أثناء الاتصال بالسيرفر!</td></tr>`;
+          `<tr><td colspan="7" style="text-align: center; color: #dc2626; padding: 20px;">عذراً، حدث خطأ أثناء جلب البيانات!</td></tr>`;
       };
       document.body.appendChild(script);
     }
@@ -119,7 +118,7 @@
       tbody.innerHTML = '';
 
       if (!data || data.length === 0) {
-        tbody.innerHTML = `<tr><td colspan="7" style="text-align: center; color: #64748b; padding: 20px;">لا توجد نتائج مطابقة للبحث.</td></tr>`;
+        tbody.innerHTML = `<tr><td colspan="7" style="text-align: center; color: #64748b; padding: 20px;">لا توجد حجوزات حتى الآن.</td></tr>`;
         return;
       }
 
@@ -127,7 +126,7 @@
         let statusBadge = '';
         if (b.status === 'pending') statusBadge = `<span class="status-badge status-pending">قيد الانتظار</span>`;
         else if (b.status === 'approved') statusBadge = `<span class="status-badge status-approved">مؤكد</span>`;
-        else if (b.status === 'rejected') statusBadge = `<span class="status-badge status-rejected">ملغي/مؤجل</span>`;
+        else if (b.status === 'rejected') statusBadge = `<span class="status-badge status-rejected">ملغي</span>`;
 
         const tr = document.createElement('tr');
         tr.innerHTML = `
