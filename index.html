@@ -13,8 +13,13 @@
     header { background: linear-gradient(135deg, var(--primary-dark), var(--primary)); color: var(--white); padding: 20px 15px; text-align: center; border-bottom-left-radius: 25px; border-bottom-right-radius: 25px; box-shadow: 0 4px 15px rgba(0,0,0,0.15); display: flex; justify-content: space-between; align-items: center; }
     header h1 { font-size: 1.3rem; font-weight: 800; }
     header p { color: var(--gold); font-size: 0.8rem; font-weight: 700; }
-    .container { max-width: 900px; margin: 20px auto; padding: 0 16px; width: 100%; flex: 1; }
+    .container { max-width: 950px; margin: 20px auto; padding: 0 16px; width: 100%; flex: 1; }
     .card { background: var(--white); border-radius: var(--radius); padding: 20px; box-shadow: var(--shadow); border: 1px solid rgba(27, 77, 137, 0.08); margin-bottom: 20px; }
+    
+    /* خانة البحث */
+    .search-box { display: flex; align-items: center; background: #f1f5f9; border: 1.5px solid #cbd5e1; border-radius: 10px; padding: 8px 14px; margin-bottom: 15px; gap: 10px; }
+    .search-box input { border: none; background: transparent; outline: none; width: 100%; font-size: 0.95rem; font-weight: 700; color: var(--text-dark); }
+    
     .table-container { overflow-x: auto; }
     table { width: 100%; border-collapse: collapse; margin-top: 10px; text-align: right; font-size: 0.9rem; }
     th, td { padding: 12px 10px; border-bottom: 1px solid #edf2f7; }
@@ -45,6 +50,12 @@
         <h3 style="color: var(--primary); font-weight: 800;"><i class="fa-solid fa-list-check"></i> قائمة الحجوزات الواردة</h3>
         <span id="loading-text" style="font-size: 0.85rem; color: #64748b;">جاري التحميل...</span>
       </div>
+
+      <!-- خانة البحث بالاسم أو التليفون -->
+      <div class="search-box">
+        <i class="fa-solid fa-magnifying-glass" style="color: var(--primary);"></i>
+        <input type="text" id="search-input" placeholder="ابحث باسم المريض أو رقم الهاتف..." oninput="filterBookings()">
+      </div>
       
       <div class="table-container">
         <table>
@@ -68,7 +79,11 @@
   </div>
 
   <script>
-    const scriptURL = "https://script.google.com/macros/s/AKfycbx2CcTc_s0yDKAJ6sqa2o3lajsicgqs_mZbThjxi717U0jkCfyU5PdC_iYXvb9nueliWg/exec";
+    const rawScriptURL = "https://script.google.com/macros/s/AKfycbx2CcTc_s0yDKAJ6sqa2o3lajsicgqs_mZbThjxi717U0jkCfyU5PdC_iYXvb9nueliWg/exec";
+    // رابط بروكسي لتفادي حظر الحماية CORS
+    const fetchURL = "https://api.allorigins.win/raw?url=" + encodeURIComponent(rawScriptURL);
+
+    let allBookings = [];
 
     async function loadBookings() {
       const tbody = document.getElementById('bookings-table-body');
@@ -76,60 +91,85 @@
       loadingText.innerText = 'جاري التحديث...';
 
       try {
-        const response = await fetch(scriptURL);
+        const response = await fetch(fetchURL + "&t=" + Date.now());
         const bookings = await response.json();
         
-        tbody.innerHTML = '';
-        if (bookings.length === 0) {
-          tbody.innerHTML = `<tr><td colspan="7" style="text-align: center; color: #64748b; padding: 20px;">لا توجد حجوزات مسجلة حتى الآن.</td></tr>`;
-        } else {
-          bookings.reverse().forEach(b => {
-            let statusBadge = '';
-            if (b.status === 'pending') statusBadge = `<span class="status-badge status-pending">قيد الانتظار</span>`;
-            else if (b.status === 'approved') statusBadge = `<span class="status-badge status-approved">مؤكد</span>`;
-            else if (b.status === 'rejected') statusBadge = `<span class="status-badge status-rejected">ملغي/مؤجل</span>`;
-
-            const tr = document.createElement('tr');
-            tr.innerHTML = `
-              <td style="font-weight: 700;">${b.name}</td>
-              <td>${b.phone}</td>
-              <td>${b.dept}</td>
-              <td>${b.service}</td>
-              <td>${b.day} (${b.time})</td>
-              <td>${statusBadge}</td>
-              <td>
-                <button class="btn-action btn-approve" onclick="updateStatus('${b.id}', 'approved')"><i class="fa-solid fa-check"></i> قبول</button>
-                <button class="btn-action btn-reject" onclick="updateStatus('${b.id}', 'rejected')"><i class="fa-solid fa-xmark"></i> رفض</button>
-              </td>
-            `;
-            tbody.appendChild(tr);
-          });
-        }
+        allBookings = bookings.reverse(); // حفظ الحجوزات وترتيبها من الأحدث
+        renderTable(allBookings);
         loadingText.innerText = 'تم التحديث بنجاح';
       } catch (e) {
+        console.error(e);
         loadingText.innerText = 'خطأ في الاتصال!';
+        tbody.innerHTML = `<tr><td colspan="7" style="text-align: center; color: #dc2626; padding: 20px;">عذراً، حدث خطأ في الاتصال بالسيرفر! اضغط تحديث للحاولة مجدداً.</td></tr>`;
       }
+    }
+
+    function renderTable(data) {
+      const tbody = document.getElementById('bookings-table-body');
+      tbody.innerHTML = '';
+
+      if (!data || data.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="7" style="text-align: center; color: #64748b; padding: 20px;">لا توجد حجوزات مطابقة للبحث.</td></tr>`;
+        return;
+      }
+
+      data.forEach(b => {
+        let statusBadge = '';
+        if (b.status === 'pending') statusBadge = `<span class="status-badge status-pending">قيد الانتظار</span>`;
+        else if (b.status === 'approved') statusBadge = `<span class="status-badge status-approved">مؤكد</span>`;
+        else if (b.status === 'rejected') statusBadge = `<span class="status-badge status-rejected">ملغي/مؤجل</span>`;
+
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+          <td style="font-weight: 700;">${b.name || '-'}</td>
+          <td>${b.phone || '-'}</td>
+          <td>${b.dept || '-'}</td>
+          <td>${b.service || '-'}</td>
+          <td>${b.day || ''} (${b.time || ''})</td>
+          <td>${statusBadge}</td>
+          <td>
+            <button class="btn-action btn-approve" onclick="updateStatus('${b.id}', 'approved')"><i class="fa-solid fa-check"></i> قبول</button>
+            <button class="btn-action btn-reject" onclick="updateStatus('${b.id}', 'rejected')"><i class="fa-solid fa-xmark"></i> رفض</button>
+          </td>
+        `;
+        tbody.appendChild(tr);
+      });
+    }
+
+    // دالة الفلترة والبحث اللحظي
+    function filterBookings() {
+      const query = document.getElementById('search-input').value.trim().toLowerCase();
+      if (!query) {
+        renderTable(allBookings);
+        return;
+      }
+      const filtered = allBookings.filter(b => {
+        const nameMatch = b.name && b.name.toLowerCase().includes(query);
+        const phoneMatch = b.phone && b.phone.toString().includes(query);
+        return nameMatch || phoneMatch;
+      });
+      renderTable(filtered);
     }
 
     async function updateStatus(id, newStatus) {
       if(!confirm('هل أنت متأكد من تغيير حالة هذا الحجز؟')) return;
       
       try {
-        await fetch(scriptURL, {
+        await fetch(rawScriptURL, {
           method: 'POST',
           mode: 'no-cors',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ action: "updateStatus", id: id, status: newStatus })
         });
         alert('تم تحديث الحالة بنجاح!');
-        setTimeout(loadBookings, 1500);
+        setTimeout(loadBookings, 1200);
       } catch (e) {
         alert('حدث خطأ أثناء التحديث.');
       }
     }
 
     loadBookings();
-    setInterval(loadBookings, 30000); // تحديث تلقائي كل 30 ثانية
+    setInterval(loadBookings, 30000); // تحديث القائمة تلقائياً كل 30 ثانية
   </script>
 </body>
 </html>
