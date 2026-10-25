@@ -108,6 +108,25 @@
     }
 
     function render(data) {
+      // 1. حفظ العنصر الذي يكتب فيه الموظف حالياً وقيمته ومكانه لكي لا يضيع أثناء التحديث
+      const activeEl = document.activeElement;
+      const activeId = activeEl ? activeEl.id : null;
+      let selectionStart = 0;
+      let selectionEnd = 0;
+      
+      if (activeEl && (activeEl.tagName === 'INPUT')) {
+        selectionStart = activeEl.selectionStart;
+        selectionEnd = activeEl.selectionEnd;
+      }
+
+      // حفظ القيم المؤقتة لكل خانات الملاحظات المفتوحة وخانة البحث
+      const savedValues = {};
+      document.querySelectorAll('input').forEach(input => {
+        if (input.id) {
+          savedValues[input.id] = input.value;
+        }
+      });
+
       const list = document.getElementById('list');
       list.innerHTML = '';
 
@@ -123,6 +142,10 @@
         else if (item.status === 'rejected') badgeHtml = `<span class="badge badge-rejected">❌ تم التأجيل/الرفض</span>`;
 
         const displayDateTime = cleanDateTime(item.day, item.time);
+
+        // استرجاع القيمة القديمة للملاحظة إن وجدت وإلا قيمة الداتا الأساسية
+        const noteInputId = `note-${item.id}`;
+        const currentNoteValue = savedValues[noteInputId] !== undefined ? savedValues[noteInputId] : (item.note || '');
 
         const card = document.createElement('div');
         card.className = 'card';
@@ -140,7 +163,7 @@
           </div>
           
           <div style="margin-top: 10px;">
-            <input type="text" id="note-${item.id}" class="note-input" placeholder="اكتب ملاحظة أو موعد بديل للمريض (مثال: تعال الساعة 7)" value="${item.note || ''}">
+            <input type="text" id="${noteInputId}" class="note-input" placeholder="اكتب ملاحظة أو موعد بديل للمريض (مثال: تعال الساعة 7)" value="${currentNoteValue}">
           </div>
 
           <div class="actions">
@@ -151,6 +174,17 @@
         `;
         list.appendChild(card);
       });
+
+      // 2. إعادة التركيز على نفس خانة البحث أو الملاحظة اللي كان الموظف يكتب فيها
+      if (activeId) {
+        const restoredEl = document.getElementById(activeId);
+        if (restoredEl) {
+          restoredEl.focus();
+          try {
+            restoredEl.setSelectionRange(selectionStart, selectionEnd);
+          } catch (err) {}
+        }
+      }
     }
 
     function handleKeyPress(e) {
@@ -160,7 +194,8 @@
     }
 
     function filterData() {
-      const q = document.getElementById('searchInput').value.trim().toLowerCase();
+      const searchInput = document.getElementById('searchInput');
+      const q = searchInput ? searchInput.value.trim().toLowerCase() : '';
       const filtered = allBookings.filter(i => (i.name && i.name.toLowerCase().includes(q)) || (i.phone && i.phone.toString().includes(q)));
       render(filtered);
     }
@@ -186,7 +221,6 @@
 
     async function deleteItem(id) {
       if (confirm('هل أنت متأكد من إزالة هذا الحجز نهائياً؟')) {
-        // إخفاء الكارت فوراً لتجربة استخدام سريعة
         const cardElem = document.getElementById(`card-${id}`);
         if (cardElem) cardElem.style.display = 'none';
 
